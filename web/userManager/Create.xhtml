@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.CreatePostBoxTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreatePostBoxLabel_login}" for="login" />
+                    <h:inputText id="login" value="#{postBoxController.selected.login}" title="#{bundle.CreatePostBoxTitle_login}" />
+                    <h:outputLabel value="#{bundle.CreatePostBoxLabel_password}" for="password" />
+                    <h:inputText id="password" value="#{postBoxController.selected.password}" title="#{bundle.CreatePostBoxTitle_password}" />
+                    <h:outputLabel value="#{bundle.CreatePostBoxLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{postBoxController.selected.name}" title="#{bundle.CreatePostBoxTitle_name}" />
+<!--                    <h:outputLabel value="#{bundle.CreatePostBoxLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{postBoxController.selected.id}" title="#{bundle.CreatePostBoxTitle_id}" />-->
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{postBoxController.create}" value="#{bundle.CreatePostBoxSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{postBoxController.prepareList}" value="#{bundle.CreatePostBoxShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.CreatePostBoxIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
