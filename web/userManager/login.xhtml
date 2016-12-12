@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title><ui:insert name="title">#{bundle.LoginPostBoxTitle}</ui:insert></title>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+    </h:head>
+
+    <h:body>
+        <h1>
+            <ui:insert name="title">#{bundle.LoginPostBoxTitle}</ui:insert>
+        </h1>
+        <p>
+            <ui:insert name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+             <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.CreatePostBoxLabel_login}" for="login" />
+                    <h:inputText id="login" value="#{postBoxController.selected.login}" title="#{bundle.CreatePostBoxTitle_login}" />
+                    <h:outputLabel value="#{bundle.CreatePostBoxLabel_password}" for="password" />
+                    <h:inputText id="password" value="#{postBoxController.selected.password}" title="#{bundle.CreatePostBoxTitle_password}" />
+                       
+                </h:panelGrid>
+                <h:commandLink action="#{postBoxController.checkLogin}" value="#{bundle.LoginPostBoxCreateLink}" />
+                <br />
+                <br />
+                 <h:commandLink action="#{postBoxController.prepareCreate}" value="#{bundle.ListPostBoxCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewPostBoxIndexLink}"/>
+
+            </h:form>
+            
+            </ui:insert>
+        </p>
+    </h:body>
+
+</html>
