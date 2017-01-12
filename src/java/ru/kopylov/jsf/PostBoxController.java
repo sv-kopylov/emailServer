@@ -3,9 +3,11 @@ package ru.kopylov.jsf;
 import ru.kopylov.persist.PostBox;
 import ru.kopylov.jsf.util.JsfUtil;
 import ru.kopylov.jsf.util.PaginationHelper;
-import ru.kopylov.ejb.PostBoxFacade;
+import ru.kopylov.dao.PostBoxFacade;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -17,17 +19,45 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import ru.kopylov.dao.LetterFacade;
+import ru.kopylov.dao.LettersTableFacade;
+import ru.kopylov.persist.Letter;
+import ru.kopylov.persist.LettersTable;
 
 @Named("postBoxController")
 @SessionScoped
 public class PostBoxController implements Serializable {
 
     private PostBox current;
+    private Letter currentLetter;
+    
     private DataModel items = null;
+    private DataModel reseivedLetItems = null;
+    private DataModel sentLetItems = null;
+    
+    private boolean receivedVisible = true;
+
+    public boolean isReceivedVisible() {
+        return receivedVisible;
+    }
+
+    public void setReceivedVisible(boolean receivedVisible) {
+        this.receivedVisible = receivedVisible;
+    }
+    
     @EJB
-    private ru.kopylov.ejb.PostBoxFacade ejbFacade;
+    private ru.kopylov.dao.PostBoxFacade ejbFacade;
+    @EJB
+    private ru.kopylov.dao.LettersTableFacade ejbLetTableFacade;
+    @EJB
+    private ru.kopylov.dao.LetterFacade ejbLetterFacade;
+    
     private PaginationHelper pagination;
+    private PaginationHelper receivedLetterspagination;
+    private PaginationHelper sentLetterspagination;
     private int selectedItemIndex;
+    
+    
 
     public PostBoxController() {
     }
@@ -39,11 +69,26 @@ public class PostBoxController implements Serializable {
         }
         return current;
     }
+     public Letter getCurrentLetter() {
+        if (currentLetter == null) {
+            currentLetter = new Letter();
+                    }
+        return currentLetter;
+    }
+     public String prepareCreateLetter(){
+         currentLetter = new Letter();
+         return "CreateLetter";
+     }
 
     private PostBoxFacade getFacade() {
         return ejbFacade;
     }
-
+    private LettersTableFacade getEjbLetTableFacade() {
+        return ejbLetTableFacade;
+    }
+    private LetterFacade getEjbLetterFacade() {
+        return ejbLetterFacade;
+    }
     public PaginationHelper getPagination() {
         if (pagination == null) {
             pagination = new PaginationHelper(10) {
@@ -55,12 +100,52 @@ public class PostBoxController implements Serializable {
 
                 @Override
                 public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
+                    return new ListDataModel (getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
                 }
             };
         }
         return pagination;
     }
+    public PaginationHelper getReceivedLetterPagination() {
+        if (receivedLetterspagination == null) {
+            receivedLetterspagination = new PaginationHelper(10) {
+
+                @Override
+//                изменить на countReceived
+                public int getItemsCount() {
+                    
+                    return getEjbLetTableFacade().countReceived(current);
+                }
+
+                @Override
+                public DataModel createPageDataModel() {
+                    return new ListDataModel<LettersTable>(getEjbLetTableFacade().findReceivedRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}, current));
+//                    return new ListDataModel(current.getThisBoxLetters());
+                }
+            };
+            
+        }
+        
+        return receivedLetterspagination;
+     }
+    public PaginationHelper getSentLetterPagination() {
+        if (sentLetterspagination == null) {
+            sentLetterspagination = new PaginationHelper(10) {
+
+                @Override
+                public int getItemsCount() {
+                    
+                    return getEjbLetTableFacade().countSent(current);
+                }
+
+                @Override
+                public DataModel createPageDataModel() {
+                    return new ListDataModel(getEjbLetTableFacade().findSentRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}, current));
+                }
+            };
+        }
+        return sentLetterspagination;
+     }
 
     public String prepareList() {
         recreateModel();
@@ -81,9 +166,24 @@ public class PostBoxController implements Serializable {
 
     public String create() {
         try {
-            System.out.println("loggin is "+current.getLogin());
+            if ( !getFacade().isLoginExists(current.getLogin())){
             getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("PostBoxCreated"));
+            JsfUtil.addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("PostBoxCreated"));
+            return "Received";
+            } else {
+                JsfUtil.addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("PostBoxExists"));
+            }
+            return null;
+        } catch (Exception e) {
+            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+            return null;
+        }
+    }
+    
+       public String createLetter() {
+        try {
+            getEjbLetterFacade().create(currentLetter);
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LetterCreated"));
             return prepareCreate();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -96,9 +196,13 @@ public class PostBoxController implements Serializable {
             PostBox findBox = getFacade().findByLogin(current.getLogin());
             if (findBox!=null&&findBox.getPassword().equals(current.getPassword())){
                 current = findBox;
-                return "LetterManager";
-            } else {
+                return "Received";
+            } else if (findBox==null){
                 JsfUtil.addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("AccountNotFound"));
+                return null;
+            } else if (!findBox.getPassword().equals(current.getPassword())){
+                JsfUtil.addErrorMessage(ResourceBundle.getBundle("/Bundle").getString("WrongPassword"));
+                current = null;
                 return null;
             }
                         
@@ -178,6 +282,33 @@ public class PostBoxController implements Serializable {
         }
         return items;
     }
+    
+    public DataModel getReseivedLetItems() {
+        if (reseivedLetItems == null) {
+            reseivedLetItems = getReceivedLetterPagination().createPageDataModel();
+            
+            Iterator a = reseivedLetItems.iterator();
+            LettersTable lt;
+            while (a.hasNext()){
+                lt = (LettersTable)a.next();
+                System.out.println(lt.getId());
+                System.out.println(lt.getLetter().getSubject());
+//                System.out.println(lt.getLetter().);
+               
+                System.out.println(lt.getPostBox().getLogin());
+               
+            }
+            
+        }
+        return reseivedLetItems;
+    }
+     
+    public DataModel getSentLetItems() {
+        if (sentLetItems == null) {
+            sentLetItems = getSentLetterPagination().createPageDataModel();
+        }
+        return sentLetItems;
+    }
 
     private void recreateModel() {
         items = null;
@@ -186,17 +317,28 @@ public class PostBoxController implements Serializable {
     private void recreatePagination() {
         pagination = null;
     }
-
+    
     public String next() {
         getPagination().nextPage();
         recreateModel();
         return "List";
+    }
+    public String nextReceivedLet() {
+        getReceivedLetterPagination().nextPage();
+        recreateModel();
+        return "Received";
     }
 
     public String previous() {
         getPagination().previousPage();
         recreateModel();
         return "List";
+    }
+    
+    public String previousReceivedLet() {
+        getReceivedLetterPagination().previousPage();
+        recreateModel();
+        return "Received";
     }
 
     public SelectItem[] getItemsAvailableSelectMany() {
@@ -211,6 +353,27 @@ public class PostBoxController implements Serializable {
         return ejbFacade.find(id);
     }
 
+     public String setReceived() {
+        receivedVisible = true;
+        return null;
+    }
+     
+      public String setSent() {
+        receivedVisible = false;
+        return null;
+    }
+
+    public String logOut (){
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "login";
+    }
+    
+    public String prepareLogin (){
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        return "login";
+    }
+    
+
     @FacesConverter(forClass = PostBox.class)
     public static class PostBoxControllerConverter implements Converter {
 
@@ -221,6 +384,7 @@ public class PostBoxController implements Serializable {
             }
             PostBoxController controller = (PostBoxController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "postBoxController");
+         
             return controller.getPostBox(getKey(value));
         }
 

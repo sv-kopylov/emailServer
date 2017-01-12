@@ -1,9 +1,9 @@
 package ru.kopylov.jsf;
 
-import ru.kopylov.persist.LettersTable;
+import ru.kopylov.persist.Letter;
 import ru.kopylov.jsf.util.JsfUtil;
 import ru.kopylov.jsf.util.PaginationHelper;
-import ru.kopylov.dao.LettersTableFacade;
+import ru.kopylov.dao.LetterFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -18,29 +18,29 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
-@Named("lettersTableController")
+@Named("letterController")
 @SessionScoped
-public class LettersTableController implements Serializable {
-    
-    private LettersTable current;
+public class LetterController implements Serializable {
+
+    private Letter current;
     private DataModel items = null;
     @EJB
-    private ru.kopylov.dao.LettersTableFacade ejbFacade;
+    private ru.kopylov.dao.LetterFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
-    public LettersTableController() {
+    public LetterController() {
     }
 
-    public LettersTable getSelected() {
+    public Letter getSelected() {
         if (current == null) {
-            current = new LettersTable();
+            current = new Letter();
             selectedItemIndex = -1;
         }
         return current;
     }
 
-    private LettersTableFacade getFacade() {
+    private LetterFacade getFacade() {
         return ejbFacade;
     }
 
@@ -68,13 +68,13 @@ public class LettersTableController implements Serializable {
     }
 
     public String prepareView() {
-        current = (LettersTable) getItems().getRowData();
+        current = (Letter) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
 
     public String prepareCreate() {
-        current = new LettersTable();
+        current = new Letter();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -82,7 +82,7 @@ public class LettersTableController implements Serializable {
     public String create() {
         try {
             getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LettersTableCreated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LetterCreated"));
             return prepareCreate();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -91,7 +91,7 @@ public class LettersTableController implements Serializable {
     }
 
     public String prepareEdit() {
-        current = (LettersTable) getItems().getRowData();
+        current = (Letter) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -99,7 +99,7 @@ public class LettersTableController implements Serializable {
     public String update() {
         try {
             getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LettersTableUpdated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LetterUpdated"));
             return "View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
@@ -108,7 +108,7 @@ public class LettersTableController implements Serializable {
     }
 
     public String destroy() {
-        current = (LettersTable) getItems().getRowData();
+        current = (Letter) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -132,7 +132,7 @@ public class LettersTableController implements Serializable {
     private void performDestroy() {
         try {
             getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LettersTableDeleted"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/Bundle").getString("LetterDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
         }
@@ -188,21 +188,21 @@ public class LettersTableController implements Serializable {
         return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
     }
 
-    public LettersTable getLettersTable(java.lang.Long id) {
+    public Letter getLetter(java.lang.Long id) {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = LettersTable.class)
-    public static class LettersTableControllerConverter implements Converter {
+    @FacesConverter(forClass = Letter.class)
+    public static class LetterControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            LettersTableController controller = (LettersTableController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "lettersTableController");
-            return controller.getLettersTable(getKey(value));
+            LetterController controller = (LetterController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "letterController");
+            return controller.getLetter(getKey(value));
         }
 
         java.lang.Long getKey(String value) {
@@ -222,11 +222,11 @@ public class LettersTableController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof LettersTable) {
-                LettersTable o = (LettersTable) object;
+            if (object instanceof Letter) {
+                Letter o = (Letter) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + LettersTable.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Letter.class.getName());
             }
         }
 
