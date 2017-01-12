@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title><ui:insert name="title">#{bundle.LetterMamagerPostBoxTitle}</ui:insert></title>
+        <h:outputStylesheet library="css" name="jsfcrud.css"/>
+    </h:head>
+
+    <h:body>
+<!--        <h1>
+            <ui:insert name="title">#{bundle.LetterMamagerPostBoxTitle}</ui:insert>
+        </h1>-->
+        <p>
+            <ui:insert name="body">
+                <h2>
+                    Welcome dear #{postBoxController.selected.name}
+                    <br />
+                   
+                </h2>
+                <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{bundle.ListReceivedLettersEmpty}" rendered="#{postBoxController.reseivedLetItems.rowCount == 0}"/>
+                <br />
+                <div>
+                <h:commandButton type="submit" action="#{postBoxController.setReceived}" value="#{bundle.RenderReceived}" disabled="#{postBoxController.receivedVisible}" />
+                
+                <h:commandButton type="submit" action="#{postBoxController.setSent}" value="#{bundle.RenderSent}" disabled="#{!postBoxController.receivedVisible}"/>
+                
+                </div>
+                <div>
+                    <h:commandButton type="submit" action="#{postBoxController.prepareCreateLetter}" value="#{bundle.Write}"/>  
+                </div>
+                
+                
+                <h:panelGroup rendered="#{postBoxController.receivedVisible}">
+                    <h3>
+                    <h:outputLabel value="#{bundle.ReceivedTytle}"></h:outputLabel> 
+                    </h3>
+                <h:panelGroup rendered="#{postBoxController.reseivedLetItems.rowCount > 0}">
+                    
+                <bt />
+                    <h:outputText value="#{postBoxController.receivedLetterPagination.pageFirstItem + 1}..#{postBoxController.receivedLetterPagination.pageLastItem + 1}/#{postBoxController.receivedLetterPagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{postBoxController.previousReceivedLet}" value="#{bundle.Previous} #{postBoxController.receivedLetterPagination.pageSize}" rendered="#{postBoxController.receivedLetterPagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{postBoxController.nextReceivedLet}" value="#{bundle.Next} #{postBoxController.receivedLetterPagination.pageSize}" rendered="#{postBoxController.receivedLetterPagination.hasNextPage}"/>&nbsp;
+                   
+                    
+                    <h:dataTable value="#{postBoxController.reseivedLetItems}" rendered="#{postBoxController.receivedVisible}" var="reseivedLetItems" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_postbox_from}"/>
+                            </f:facet>
+                            <h:outputText value="#{reseivedLetItems.postBox.login}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_letter_subject}"/>
+                            </f:facet>
+                            <h:outputText value="#{reseivedLetItems.letter.subject}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_relation}"/>
+                            </f:facet>
+                            <h:outputText value="#{reseivedLetItems.relation}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_timestamp}"/>
+                            </f:facet>
+                            <h:outputText value="#{reseivedLetItems.timestamp}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{reseivedLetItems.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                        
+                            <h:commandLink action="#{lettersTableController.prepareEdit}" value="#{bundle.ListLettersTableEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{lettersTableController.destroy}" value="#{bundle.ListLettersTableDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                </h:panelGroup>
+                
+                
+                <h:panelGroup rendered="#{!postBoxController.receivedVisible}">
+                    <h3>
+                    <h:outputLabel value="#{bundle.SentTytle}"></h:outputLabel> 
+                    </h3>
+                    <h:panelGroup rendered="#{postBoxController.sentLetItems.rowCount > 0}">
+                    
+                <bt />
+                    <h:outputText value="#{postBoxController.sentLetterPagination.pageFirstItem + 1}..#{postBoxController.sentLetterPagination.pageLastItem + 1}/#{postBoxController.sentLetterPagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{postBoxController.previousReceivedLet}" value="#{bundle.Previous} #{postBoxController.sentLetterPagination.pageSize}" rendered="#{postBoxController.sentLetterPagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{postBoxController.nextReceivedLet}" value="#{bundle.Next} #{postBoxController.sentLetterPagination.pageSize}" rendered="#{postBoxController.sentLetterPagination.hasNextPage}"/>&nbsp;
+                   
+                    
+                    <h:dataTable value="#{postBoxController.sentLetItems}"  var="sentLetItems" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_postbox_from}"/>
+                            </f:facet>
+                            <h:outputText value="#{sentLetItems.postBox.login}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_letter_subject}"/>
+                            </f:facet>
+                            <h:outputText value="#{sentLetItems.letter.subject}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_relation}"/>
+                            </f:facet>
+                            <h:outputText value="#{sentLetItems.relation}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_timestamp}"/>
+                            </f:facet>
+                            <h:outputText value="#{sentLetItems.timestamp}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{bundle.ListLettersTableTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{sentLetItems.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                        
+                            <h:commandLink action="#{lettersTableController.prepareEdit}" value="#{bundle.ListLettersTableEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{lettersTableController.destroy}" value="#{bundle.ListLettersTableDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                </h:panelGroup>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewPostBoxIndexLink}"/>
+                <br />
+                <h:commandLink action="#{postBoxController.logOut}" value="#{bundle.LogOut}"/>
+                </h:form>
+            </ui:insert>
+        </p>
+    </h:body>
+
+</html>

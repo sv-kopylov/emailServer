@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewLettersTableTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewLettersTableLabel_postbox}"/>
+                    <h:outputText value="#{lettersTableController.selected.postbox}" title="#{bundle.ViewLettersTableTitle_postbox}"/>
+                    <h:outputText value="#{bundle.ViewLettersTableLabel_letter}"/>
+                    <h:outputText value="#{lettersTableController.selected.letter}" title="#{bundle.ViewLettersTableTitle_letter}"/>
+                    <h:outputText value="#{bundle.ViewLettersTableLabel_relation}"/>
+                    <h:outputText value="#{lettersTableController.selected.relation}" title="#{bundle.ViewLettersTableTitle_relation}"/>
+                    <h:outputText value="#{bundle.ViewLettersTableLabel_timestamp}"/>
+                    <h:outputText value="#{lettersTableController.selected.timestamp}" title="#{bundle.ViewLettersTableTitle_timestamp}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:outputText>
+                    <h:outputText value="#{bundle.ViewLettersTableLabel_id}"/>
+                    <h:outputText value="#{lettersTableController.selected.id}" title="#{bundle.ViewLettersTableTitle_id}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{lettersTableController.destroyAndView}" value="#{bundle.ViewLettersTableDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewLettersTableEditLink}"/>
+                <br />
+                <h:commandLink action="#{lettersTableController.prepareCreate}" value="#{bundle.ViewLettersTableCreateLink}" />
+                <br />
+                <h:commandLink action="#{lettersTableController.prepareList}" value="#{bundle.ViewLettersTableShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewLettersTableIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewPostBoxTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewPostBoxLabel_login}"/>
+                    <h:outputText value="#{postBoxController.selected.login}" title="#{bundle.ViewPostBoxTitle_login}"/>
+                    <h:outputText value="#{bundle.ViewPostBoxLabel_password}"/>
+                    <h:outputText value="#{postBoxController.selected.password}" title="#{bundle.ViewPostBoxTitle_password}"/>
+                    <h:outputText value="#{bundle.ViewPostBoxLabel_name}"/>
+                    <h:outputText value="#{postBoxController.selected.name}" title="#{bundle.ViewPostBoxTitle_name}"/>
+                    <h:outputText value="#{bundle.ViewPostBoxLabel_id}"/>
+                    <h:outputText value="#{postBoxController.selected.id}" title="#{bundle.ViewPostBoxTitle_id}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{postBoxController.destroyAndView}" value="#{bundle.ViewPostBoxDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewPostBoxEditLink}"/>
+                <br />
+                <h:commandLink action="#{postBoxController.prepareCreate}" value="#{bundle.ViewPostBoxCreateLink}" />
+                <br />
+                <h:commandLink action="#{postBoxController.prepareList}" value="#{bundle.ViewPostBoxShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewPostBoxIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

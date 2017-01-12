@@ -14,19 +14,16 @@
         <h1>
             <ui:insert name="title">#{bundle.LetterMamagerPostBoxTitle}</ui:insert>
         </h1>
-        <h2>
-            
-            Welcome dear #{postBoxController.selected.name}
-        </h2>
         <p>
             <ui:insert name="body">
-             <h:form>
-            
+                <h2>
+                    Welcome dear #{postBoxController.selected.name}
+                </h2>
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
                 <br />
                 <h:link outcome="/index" value="#{bundle.ViewPostBoxIndexLink}"/>
-
-            </h:form>
-            
             </ui:insert>
         </p>
     </h:body>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.EditLettersTableTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{bundle.EditLettersTableLabel_postbox}" for="postbox" />
+                    <h:selectOneMenu id="postbox" value="#{lettersTableController.selected.postbox}" title="#{bundle.EditLettersTableTitle_postbox}" >
+                        <f:selectItems value="#{postBoxController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditLettersTableLabel_letter}" for="letter" />
+                    <h:selectOneMenu id="letter" value="#{lettersTableController.selected.letter}" title="#{bundle.EditLettersTableTitle_letter}" >
+                        <f:selectItems value="#{letterController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{bundle.EditLettersTableLabel_relation}" for="relation" />
+                    <h:inputText id="relation" value="#{lettersTableController.selected.relation}" title="#{bundle.EditLettersTableTitle_relation}" />
+                    <h:outputLabel value="#{bundle.EditLettersTableLabel_timestamp}" for="timestamp" />
+                    <h:inputText id="timestamp" value="#{lettersTableController.selected.timestamp}" title="#{bundle.EditLettersTableTitle_timestamp}" >
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{bundle.EditLettersTableLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{lettersTableController.selected.id}" title="#{bundle.EditLettersTableTitle_id}" />
+                </h:panelGrid>
+                <h:commandLink action="#{lettersTableController.update}" value="#{bundle.EditLettersTableSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{bundle.EditLettersTableViewLink}"/>
+                <br />
+                <h:commandLink action="#{lettersTableController.prepareList}" value="#{bundle.EditLettersTableShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.EditLettersTableIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

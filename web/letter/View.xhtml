@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{bundle.ViewLetterTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{bundle.ViewLetterLabel_subject}"/>
+                    <h:outputText value="#{letterController.selected.subject}" title="#{bundle.ViewLetterTitle_subject}"/>
+                    <h:outputText value="#{bundle.ViewLetterLabel_letter}"/>
+                    <h:outputText value="#{letterController.selected.letter}" title="#{bundle.ViewLetterTitle_letter}"/>
+                    <h:outputText value="#{bundle.ViewLetterLabel_id}"/>
+                    <h:outputText value="#{letterController.selected.id}" title="#{bundle.ViewLetterTitle_id}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{letterController.destroyAndView}" value="#{bundle.ViewLetterDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{bundle.ViewLetterEditLink}"/>
+                <br />
+                <h:commandLink action="#{letterController.prepareCreate}" value="#{bundle.ViewLetterCreateLink}" />
+                <br />
+                <h:commandLink action="#{letterController.prepareList}" value="#{bundle.ViewLetterShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{bundle.ViewLetterIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
